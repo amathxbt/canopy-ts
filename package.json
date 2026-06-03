@@ -1,0 +1,53 @@
+{
+  "name": "@canopy-network/canopy-crypto",
+  "version": "0.2.0",
+  "description": "TypeScript SDK for Canopy blockchain plugin frontends — signing, keystore, RPC, and WebSocket transport",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./crypto": {
+      "types": "./dist/crypto.d.ts",
+      "import": "./dist/crypto.js"
+    },
+    "./rpc": {
+      "types": "./dist/rpc.d.ts",
+      "import": "./dist/rpc.js"
+    },
+    "./ws": {
+      "types": "./dist/ws.d.ts",
+      "import": "./dist/ws.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "CHANGELOG.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/canopy-network/typescript-sdk.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "prepare": "tsc",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@noble/curves": "^2.0.1",
+    "@noble/hashes": "^2.0.1",
+    "protobufjs": "^7.4.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  }
+}
