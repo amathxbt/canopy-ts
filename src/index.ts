@@ -1,17 +1,19 @@
 /**
- * canopy-crypto — Canopy blockchain plugin SDK
+ * @canopynetwork/canopy-ts — Canopy blockchain TypeScript SDK
  *
  * Subpath imports (recommended):
- *   import { ... } from "canopy-crypto/crypto"  — signing, encoding, wallets
- *   import { ... } from "canopy-crypto/rpc"      — node RPC helpers
- *   import { ... } from "canopy-crypto/ws"       — WebSocket transport
+ *   import { ... } from "@canopynetwork/canopy-ts/crypto"  — signing, encoding, wallets
+ *   import { ... } from "@canopynetwork/canopy-ts/rpc"     — node RPC helpers
+ *   import { ... } from "@canopynetwork/canopy-ts/ws"      — WebSocket transport
+ *   import { ... } from "@canopynetwork/canopy-ts/errors"  — error classes
  *
  * Or import everything from the root for convenience:
- *   import { ... } from "canopy-crypto"
+ *   import { ... } from "@canopynetwork/canopy-ts"
  */
 
 export * from "./crypto.js";
 export * from "./rpc.js";
 export * from "./ws.js";
+export * from "./errors.js";
 export { WalletManager } from "./wallet-manager.js";
 export type { WalletAccount } from "./types.js";

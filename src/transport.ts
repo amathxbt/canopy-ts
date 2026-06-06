@@ -1,6 +1,7 @@
 import { hexToBytes } from "@noble/hashes/utils.js";
 import { signMessage } from "./signing.js";
 import { CurveType } from "./types.js";
+import { TransportError } from "./errors.js";
 
 export interface GameTransport {
   connect(): void;
@@ -19,6 +20,10 @@ export interface DirectTransportConfig {
   privateKeyHex: string;
   curveType: CurveType;
   wsUrl?: string;
+  /** Initial reconnect backoff in ms (doubles each attempt). Default 1000. */
+  reconnectBaseDelayMs?: number;
+  /** Upper bound on reconnect backoff in ms. Default 30000. */
+  reconnectMaxDelayMs?: number;
 }
 
 export class DirectTransport implements GameTransport {
@@ -30,7 +35,7 @@ export class DirectTransport implements GameTransport {
   private _connected = false;
   private ws: WebSocket | null = null;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
-  private reconnectDelay = 1000;
+  private reconnectDelay: number;
   private shouldReconnect = false;
   private authenticated = false;
 
@@ -38,12 +43,17 @@ export class DirectTransport implements GameTransport {
   private readonly privateKeyHex: string;
   private readonly curveType: CurveType;
   private readonly wsUrl: string;
+  private readonly reconnectBaseDelay: number;
+  private readonly reconnectMaxDelay: number;
 
   constructor(config: DirectTransportConfig) {
     this.publicKeyHex = config.publicKeyHex;
     this.privateKeyHex = config.privateKeyHex;
     this.curveType = config.curveType;
     this.wsUrl = config.wsUrl ?? "ws://localhost:36660/ws";
+    this.reconnectBaseDelay = config.reconnectBaseDelayMs ?? 1000;
+    this.reconnectMaxDelay = config.reconnectMaxDelayMs ?? 30000;
+    this.reconnectDelay = this.reconnectBaseDelay;
   }
 
   get connected(): boolean {
@@ -69,14 +79,14 @@ export class DirectTransport implements GameTransport {
 
   send(msg: object): void {
     if (!this.ws || !this._connected) {
-      throw new Error("WebSocket not connected");
+      throw new TransportError("WebSocket not connected");
     }
     this.ws.send(JSON.stringify(msg));
   }
 
   sendBinary(data: ArrayBuffer): void {
     if (!this.ws || !this._connected) {
-      throw new Error("WebSocket not connected");
+      throw new TransportError("WebSocket not connected");
     }
     this.ws.send(data);
   }
@@ -89,7 +99,7 @@ export class DirectTransport implements GameTransport {
 
     ws.onopen = () => {
       // Reset backoff on successful connection
-      this.reconnectDelay = 1000;
+      this.reconnectDelay = this.reconnectBaseDelay;
     };
 
     ws.onmessage = (event: MessageEvent) => {
@@ -182,7 +192,7 @@ export class DirectTransport implements GameTransport {
       this.reconnectTimer = null;
       this.openSocket();
     }, delay);
-    this.reconnectDelay = Math.min(this.reconnectDelay * 2, 30000);
+    this.reconnectDelay = Math.min(this.reconnectDelay * 2, this.reconnectMaxDelay);
   }
 }
 
@@ -256,7 +266,7 @@ export function createTransport(
     return new PortalTransport(parentOrigin);
   }
   if (!signer) {
-    throw new Error(
+    throw new TransportError(
       "DirectTransportConfig is required when not running inside an iframe",
     );
   }

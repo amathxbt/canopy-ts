@@ -1,6 +1,6 @@
 {
-  "name": "@canopy-network/canopy-ts",
-  "version": "0.2.0",
+  "name": "@canopynetwork/canopy-ts",
+  "version": "0.3.0",
   "description": "TypeScript SDK for Canopy blockchain plugin frontends — signing, keystore, RPC, and WebSocket transport",
   "type": "module",
   "main": "dist/index.js",
@@ -21,11 +21,14 @@
     "./ws": {
       "types": "./dist/ws.d.ts",
       "import": "./dist/ws.js"
+    },
+    "./errors": {
+      "types": "./dist/errors.d.ts",
+      "import": "./dist/errors.js"
     }
   },
   "files": [
     "dist",
-    "src",
     "CHANGELOG.md"
   ],
   "repository": {
@@ -44,7 +47,8 @@
   "dependencies": {
     "@noble/curves": "^2.0.1",
     "@noble/hashes": "^2.0.1",
-    "protobufjs": "^7.4.0"
+    "protobufjs": "^7.4.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "typescript": "^5.0.0",
