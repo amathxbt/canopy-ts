@@ -66,8 +66,8 @@ function signSECP256K1(
     throw new Error(`Invalid SECP256K1 private key size: ${privKeyBytes.length}`);
   }
   // compact (r,s) without recovery byte — matches Go SECP256K1 signature format
-  // noble/curves v2 sign() returns Uint8Array directly in compact format
-  return bytesToHex(secp256k1.sign(messageBytes, privKeyBytes) as unknown as Uint8Array);
+  // noble/curves v2: sign() returns a Signature object; use .toCompactRawBytes() for raw bytes
+  return bytesToHex(secp256k1.sign(messageBytes, privKeyBytes).toCompactRawBytes());
 }
 
 export function derivePublicKey(
