@@ -38,6 +38,15 @@ export async function decryptPrivateKey(
     ["decrypt"]
   );
 
+  // SECURITY NOTE: The nonce is derived deterministically from the same key material
+  // (first 12 bytes of the Argon2 output). Because the same password+salt always
+  // produces an identical key AND nonce pair, this does not provide nonce randomness.
+  // Under AES-GCM, reusing (key, nonce) allows an attacker who obtains two ciphertexts
+  // encrypted under the same password to recover the XOR of their plaintexts.
+  // This is a protocol-level decision shared with the Go node — changing only this side
+  // would break decryption of existing keystores. A follow-up should update both sides
+  // to prepend a random nonce to the ciphertext and read it back on decrypt.
+  // See: https://github.com/canopy-network/canopy/issues (track as security issue)
   const nonce = derivedKey.slice(0, NONCE_LENGTH);
 
   try {
